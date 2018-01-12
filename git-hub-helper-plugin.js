@@ -40,14 +40,19 @@ var pullRequestHelperPlugin = new function(){
       </ul>
 	`;
 
-	let currentComment= null;
+	let currentComment = null;
 	let commentCount = 0;
 
 	document.onkeydown=nextpage; 
 	function nextpage(e){
 		let event = document.all ? window.event : e;
 		const isNotInSomeTextField = !/^(?:input|textarea|select|button)$/i.test(e.target.tagName);
+
 		if (isNotInSomeTextField) {
+			setUpHotkeyFunctions();
+		}
+
+		function setUpHotkeyFunctions(){
 			if(event.keyCode==74){
 				onNextClicked();
 			}
@@ -66,7 +71,6 @@ var pullRequestHelperPlugin = new function(){
 			if(event.keyCode==190){
 				toggleCompact();
 			}
-			console.log('hamo' + event.keyCode);
 		}
 	}
 	
@@ -74,36 +78,25 @@ var pullRequestHelperPlugin = new function(){
 		if (window.location.host.indexOf('github.') > -1 && window.location.host.indexOf('.com') > -1 ){
 			initPlugin();
 			
-			$("body").on("click", "a", function() {
-				if((this).attr('href')!=='#'){
-					initPlugin($(this).attr('href'), true);
-				}
-			});
-
-			// Check when user goes to pull request
-			$(window).on('hashchange', function(e){
-				if((this).attr('href')!=='#'){
-					initPlugin();
-				}
-			});
+			// Re-evaluate options to disable on PR pages
+			// $("body").on("click", "a", function() {
+			// 	if((this).attr('href')!=='#'){
+			// 		initPlugin($(this).attr('href'), true);
+			// 	}
+			// });
 		}
 	}
 
 	function initPlugin(href, soft=false){
-		href = href === undefined ? "" : href;
-		if(window.location.href.indexOf('/pull/') > 0 || href.indexOf('/pull/') > 0){
-			removePrevious();
-			addConstrols();
-			attachClickHandlers();
-			loadLocalStorage(soft);
+		cleanExistingControls();
+		addConstrols();
+		attachClickHandlers();
+		loadLocalStorage(soft);
 
-			log('GitHub plugin loaded')
-		}else if(href.indexOf('/pull/') < 0){
-			removePrevious();
-		}
+		log('GitHub plugin loaded')
 	}
 
-	function removePrevious(){
+	function cleanExistingControls(){
 		$('#ghhp-buttons-panel').remove();
 	}
 
@@ -121,14 +114,21 @@ var pullRequestHelperPlugin = new function(){
 			updateLocalStorage();
 		}
 
-		if (helper.state.compact){
-			helper.state.compact = !helper.state.compact;
-			toggleCompact();
+		restoreCompactState();
+		restoreWidthState();
+
+		function restoreCompactState(){
+			if (helper.state.compact){
+				helper.state.compact = !helper.state.compact;
+				toggleCompact();
+			}
 		}
 
-		if (helper.state.fullWidth && !soft){
-			helper.state.fullWidth = !helper.state.fullWidth;
-			toggleFullWidth();
+		function restoreWidthState(){
+			if (helper.state.fullWidth && !soft){
+				helper.state.fullWidth = !helper.state.fullWidth;
+				toggleFullWidth();
+			}
 		}
 	}
 
@@ -143,6 +143,7 @@ var pullRequestHelperPlugin = new function(){
 		$('#ghhp-buttons-panel').append(jumpToNextComment);
 		$('#ghhp-buttons-panel').append(jumpToPreviousComment);
 		$('#ghhp-buttons-panel').append(menuButton);
+
 		if($('#ghhp-menu').length > 0){
 			$('#ghhp-menu').remove();
 		}
@@ -170,7 +171,7 @@ var pullRequestHelperPlugin = new function(){
 		});
 
 		$('#ghhp-buttons-panel #menu-toggle').on('click', function(){
-			log('going to previous');
+			log('toggle menu');
 			toggleMenuItems();
 		});
 
@@ -208,9 +209,11 @@ var pullRequestHelperPlugin = new function(){
 
 	function toggleMenuItems(){
 		let options = $('body').find('#ghhp-menu');
+
+		// If already injected into html
 		if(options.length > 0){
 			if (options.is(':visible')){
-				options.toggle();
+				options.hide();
 			}else{
 				options.show();
 			}
@@ -292,9 +295,3 @@ $(function(){
 function log(msg){
 	console.log("GHHP: " + msg);
 }
-/*try{
-}
-catch(){
-	console.log("BBHP: Error");
-}*/
-
