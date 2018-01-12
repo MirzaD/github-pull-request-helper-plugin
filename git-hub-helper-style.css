@@ -1,0 +1,17 @@
+#ghhp-buttons-panel .ghhp-label{
+    display: inline;
+}
+
+#ghhp-buttons-panel.compact .ghhp-label{
+    display: none;
+}
+
+.ghhp-full-width{
+    width:100% !important;
+    padding-left: 35px !important;
+    padding-right: 35px !important;
+}
+
+.ghhp-full-width-content{
+    width:75% !important;
+}
