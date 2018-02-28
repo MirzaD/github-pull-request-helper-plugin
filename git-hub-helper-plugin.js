@@ -53,22 +53,22 @@ var pullRequestHelperPlugin = new function(){
 		}
 
 		function setUpHotkeyFunctions(){
-			if(event.keyCode==74){
+			if(event.keyCode===74){
 				onNextClicked();
 			}
-			if(event.keyCode==75){
+			if(event.keyCode===75){
 				onPreviouslicked();
 			}
-			if(event.keyCode==69){
+			if(event.keyCode===69){
 				onExpandAllClicked();
 			}
-			if(event.keyCode==67){
+			if(event.keyCode===67){
 				onCollapseAllClicked();
 			}
-			if(event.keyCode==70){
+			if(event.keyCode===70){
 				toggleFullWidth();
 			}
-			if(event.keyCode==190){
+			if(event.keyCode===190){
 				toggleCompact();
 			}
 		}
@@ -77,13 +77,6 @@ var pullRequestHelperPlugin = new function(){
 	helper.onPageLoaded = function(){
 		if (window.location.host.indexOf('github.') > -1 && window.location.host.indexOf('.com') > -1 ){
 			initPlugin();
-			
-			// Re-evaluate options to disable on PR pages
-			// $("body").on("click", "a", function() {
-			// 	if((this).attr('href')!=='#'){
-			// 		initPlugin($(this).attr('href'), true);
-			// 	}
-			// });
 		}
 	}
 
@@ -106,7 +99,7 @@ var pullRequestHelperPlugin = new function(){
 			helper.state = JSON.parse(localStorage.getItem("ghhp"))
 		}
 		catch(e){};
-		if (helper.state === null || helper.state === undefined){
+		if (helper.state == null){
 			helper.state = {
 				compact: false,
 				fullWidth: false
